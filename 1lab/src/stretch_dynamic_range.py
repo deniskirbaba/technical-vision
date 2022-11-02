@@ -2,27 +2,33 @@ import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
 
-hist_size = 256
-hist_range = (0, 256)
-
 img_folder = "C:/denFiles/git/technical-vision/1lab/images/"
-img = cv.imread(img_folder + "lake_forest_rain_small.jpg", cv.IMREAD_GRAYSCALE)
+img = cv.imread(img_folder + "spb.jpg", cv.IMREAD_GRAYSCALE)
+i_max = np.max(img)
+i_min = np.min(img)
+
+hist_size = 256
+hist_range = [0, 256]
 hist = cv.calcHist([img], [0], None, [hist_size], hist_range)
-plt.plot(hist)
+cumul_hist = np.cumsum(hist)
 
-norm_img = img / 255
-
-max_i = np.max(norm_img)
-min_i = np.min(norm_img)
-non_linearity_factor = 0.5
-
-new_norm_img = np.clip(((norm_img - min_i) / (max_i - min_i)) ** non_linearity_factor, 0, 1)
-new_img = (new_norm_img * 255).astype(np.uint8)
+non_linearity_factor = 0.7
+new_img = np.power((img.astype(np.float32) - i_min) / (i_max - i_min), non_linearity_factor)
+new_img = (255 * new_img).astype(np.uint8)
 new_hist = cv.calcHist([new_img], [0], None, [hist_size], hist_range)
-plt.plot(new_hist)
+new_cumul_hist = np.cumsum(new_hist)
+
+plt.rcParams["figure.figsize"] = (16,8)
+figure, axis = plt.subplots(1, 2)
+axis[0].plot(cumul_hist, 'b', label="Initial")
+axis[0].plot(new_cumul_hist, 'r', label="Linear alignment")
+axis[1].plot(hist, 'b')
+axis[1].plot(new_hist, 'r')
+figure.legend(loc="upper right")
 plt.show()
 
-comp = np.concatenate((img, new_img), axis=1)
-cv.imshow("images", comp)
+imgs = np.concatenate((img, new_img), axis=1)
+cv.imwrite(img_folder + "stretch_dyn_r.jpg", imgs)
+cv.imshow("Stretching dynamic range", imgs)
 cv.waitKey(0)
 cv.destroyAllWindows()

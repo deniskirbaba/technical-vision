@@ -2,41 +2,36 @@ import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
 
-img_data_folder = "C:/denFiles/git/technical-vision/1lab/images/"
+data_folder = "C:/denFiles/git/technical-vision/1lab/images/"
 
-img = cv.imread(img_data_folder + "lake_forest_rain_small.jpg", cv.IMREAD_GRAYSCALE)
+img = cv.imread(data_folder + "spb.jpg", cv.IMREAD_GRAYSCALE)
 
-max_int = np.max(img)
+l = 255
 n_pix = img.size
 
 hist_size = 256
 hist_range = (0, 256)
 
 hist = cv.calcHist([img], [0], None, [hist_size], hist_range)
-norm_hist = (max_int / n_pix) * hist
+norm_hist = (l / n_pix) * hist
+cumul_hist = np.clip(np.cumsum(norm_hist), 0, 255)
 
-cum_hist = np.zeros_like(norm_hist)
-for i in range(norm_hist.shape[0]):
-    cum_hist[i] = np.sum(norm_hist[:i])
+new_img = cumul_hist[img].astype(np.uint8)
+new_hist = cv.calcHist([new_img], [0], None, [hist_size], hist_range)
+new_norm_hist = (l / n_pix) * new_hist
+new_cumul_hist = np.clip(np.cumsum(new_norm_hist), 0, 255)
 
-# plt.plot(norm_hist, 'b')
-# plt.plot(cum_hist, 'r')
-# plt.show()
+plt.rcParams["figure.figsize"] = (16,8)
+figure, axis = plt.subplots(1, 2)
+axis[0].plot(cumul_hist, 'b', label="Initial")
+axis[0].plot(new_cumul_hist, 'r', label="Linear alignment")
+axis[1].plot(hist, 'b')
+axis[1].plot(new_hist, 'r')
+figure.legend(loc="upper right")
+plt.show()
 
-
-def new_intensities(prev_int):
-    return cum_hist[prev_int]
-
-
-new_image = np.around(np.squeeze(np.array([new_intensities(i) for i in img]))).astype(np.uint8)
-
-new_hist = cv.calcHist([new_image], [0], None, [hist_size], hist_range)
-
-# plt.plot(hist, 'b')
-# plt.plot(new_hist, 'r')
-# plt.show()
-
-comp = np.concatenate((img, new_image), axis=1)
-cv.imshow("linear alignment", comp)
+imgs = np.concatenate((img, new_img), axis=1)
+cv.imwrite(data_folder + "lin_al.jpg", imgs)
+cv.imshow("Linear alignment", imgs)
 cv.waitKey(0)
 cv.destroyAllWindows()

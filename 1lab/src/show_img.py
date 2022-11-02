@@ -1,9 +1,13 @@
 import cv2 as cv
+import numpy as np
 
 img_data_folder = "C:/denFiles/git/technical-vision/1lab/images/"
 
-img = cv.imread(img_data_folder + "lake_forest_rain_small.jpg", cv.IMREAD_COLOR)
+img = cv.imread(img_data_folder + "snowforest_small.jpg", cv.IMREAD_COLOR)
+img2 = cv.imread(img_data_folder + "snowforest_small_gray.jpg", cv.IMREAD_COLOR)
 
-cv.imshow("image", img)
+imgs = np.concatenate((img, img2), axis=1)
+
+cv.imshow("Images", imgs)
 cv.waitKey(0)
 cv.destroyAllWindows()

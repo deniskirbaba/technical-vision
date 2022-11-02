@@ -2,10 +2,10 @@ import cv2 as cv
 
 img_data_folder = "C:/denFiles/git/technical-vision/1lab/images/"
 
-img = cv.imread(img_data_folder + "lenna.png", cv.IMREAD_COLOR)
+img = cv.imread(img_data_folder + "snowforest.jpg", cv.IMREAD_COLOR)
 print('Original dimensions: ', img.shape)
 
-scale_percent = 50
+scale_percent = 60
 width = int(img.shape[1] * scale_percent / 100)
 height = int(img.shape[0] * scale_percent / 100)
 new_dim = (width, height)

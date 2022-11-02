@@ -12,7 +12,7 @@ hist = cv.calcHist([img], [0], None, [hist_size], hist_range)
 
 offset = 75
 
-new_img = np.clip(img + 75, 0, 255)
+new_img = np.clip(img.astype(np.int16) + offset, 0, 255).astype(np.uint8)
 new_hist = cv.calcHist([new_img], [0], None, [hist_size], hist_range)
 
 plt.plot(hist, 'b')

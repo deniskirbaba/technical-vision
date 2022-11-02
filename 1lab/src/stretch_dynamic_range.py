@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 img_folder = "C:/denFiles/git/technical-vision/1lab/images/"
-img = cv.imread(img_folder + "spb.jpg", cv.IMREAD_GRAYSCALE)
+img = cv.imread(img_folder + "snowforest_small_gray.jpg", cv.IMREAD_GRAYSCALE)
 i_max = np.max(img)
 i_min = np.min(img)
 
@@ -21,7 +21,7 @@ new_cumul_hist = np.cumsum(new_hist)
 plt.rcParams["figure.figsize"] = (16,8)
 figure, axis = plt.subplots(1, 2)
 axis[0].plot(cumul_hist, 'b', label="Initial")
-axis[0].plot(new_cumul_hist, 'r', label="Linear alignment")
+axis[0].plot(new_cumul_hist, 'r', label="Stretching dynamic range")
 axis[1].plot(hist, 'b')
 axis[1].plot(new_hist, 'r')
 figure.legend(loc="upper right")

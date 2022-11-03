@@ -3,15 +3,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 img_path = "C:/denFiles/git/technical-vision/1lab/images/"
+# reading an image
 img = cv.imread(img_path + "spb.jpg", cv.IMREAD_GRAYSCALE)
 i_min = np.min(img)
 
+# make a cumulative hist of the initial image
 hist_size = 256
 hist_range = (0, 256)
 hist = cv.calcHist([img], [0], None, [hist_size], hist_range)
 cumul_hist = np.cumsum(hist) / img.size
-cumul_hist = np.where(cumul_hist < 0.99999, cumul_hist, 0.99999)
+cumul_hist = np.where(cumul_hist < 0.99999, cumul_hist, 0.99999) # exclude unit values to avoid infinity in the logarithm afterwards
 
+# get the transformed image
 slope_factor = 2
 new_img = np.clip(i_min - (1 / slope_factor) * 255 * np.log(1 - cumul_hist[img]), 0, 255).astype(np.uint8)
 new_hist = cv.calcHist([new_img], [0], None, [hist_size], hist_range)

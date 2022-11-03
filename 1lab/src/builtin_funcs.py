@@ -3,14 +3,18 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 src_path = "C:/denFiles/git/technical-vision/1lab/images/"
+# reading an image
 img = cv.imread(src_path + "snowforest_small_gray.jpg", cv.IMREAD_GRAYSCALE)
+
 hist_size = 256
 hist_range = [0, 256]
-
 hist = cv.calcHist([img], [0], None, [hist_size], hist_range)
+
+# use equalizeHist()
 eq_img = cv.equalizeHist(img)
 eq_hist = cv.calcHist([eq_img], [0], None, [hist_size], hist_range)
 
+# ust CLAHE
 clahe = cv.createCLAHE()
 clahe_img = cv.CLAHE.apply(clahe, img)
 clahe_hist = cv.calcHist([clahe_img], [0], None, [hist_size], hist_range)

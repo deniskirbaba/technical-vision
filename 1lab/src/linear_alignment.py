@@ -4,18 +4,20 @@ from matplotlib import pyplot as plt
 
 data_folder = "C:/denFiles/git/technical-vision/1lab/images/"
 
+# reading an image
 img = cv.imread(data_folder + "spb.jpg", cv.IMREAD_GRAYSCALE)
 
-l = 255
+l = 255 # max intensity
 n_pix = img.size
 
+# calculate cumulative histogram for the initial image
 hist_size = 256
 hist_range = (0, 256)
-
 hist = cv.calcHist([img], [0], None, [hist_size], hist_range)
 norm_hist = (l / n_pix) * hist
 cumul_hist = np.clip(np.cumsum(norm_hist), 0, 255)
 
+# get the linear aligned image
 new_img = cumul_hist[img].astype(np.uint8)
 new_hist = cv.calcHist([new_img], [0], None, [hist_size], hist_range)
 new_norm_hist = (l / n_pix) * new_hist

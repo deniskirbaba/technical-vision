@@ -3,15 +3,18 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 src_path = "C:/denFiles/git/technical-vision/1lab/images/"
+# reading an image
 img = cv.imread(src_path + "snowforest_small_gray.jpg", cv.IMREAD_GRAYSCALE)
 i_min = np.min(img)
 
+# make a cumulative hist of the initial image
 hist_range = [0, 256]
 hist_size = 256
 hist = cv.calcHist([img], [0], None, [hist_size], hist_range)
 cumul_hist = np.cumsum(hist) / img.size
-cumul_hist = np.where(cumul_hist < 0.99999, cumul_hist, 0.99999)
+cumul_hist = np.where(cumul_hist < 0.99999, cumul_hist, 0.99999) # exclude unit values to avoid infinity in the logarithm afterwards
 
+# get the transformed image
 alpha = 0.3
 new_img = i_min + 255 * (2 * (alpha ** 2) * np.log(1/(1 - cumul_hist[img]))) ** (1 / 2)
 new_img = np.clip(new_img, 0, 255).astype(np.uint8)

@@ -1,8 +1,8 @@
 import cv2 as cv
 
-img_data_folder = "C:/denFiles/git/technical-vision/1lab/images/"
+img_data_folder = "C:/denFiles/git/technical-vision/2lab/images/"
 
-img = cv.imread(img_data_folder + "cruise.jpg", cv.IMREAD_GRAYSCALE)
+img = cv.imread(img_data_folder + "winter.jpg", cv.IMREAD_GRAYSCALE)
 
 # scale_percent = 50
 # width = int(img.shape[1] * scale_percent / 100)
@@ -11,4 +11,4 @@ img = cv.imread(img_data_folder + "cruise.jpg", cv.IMREAD_GRAYSCALE)
 #
 # resized_img = cv.resize(img, new_dim, interpolation=cv.INTER_AREA)
 
-cv.imwrite(img_data_folder + "cruise_gray.jpg", img)
+cv.imwrite(img_data_folder + "winter_gray.jpg", img)

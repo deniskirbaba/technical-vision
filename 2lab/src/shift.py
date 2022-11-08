@@ -4,8 +4,9 @@ import numpy as np
 img_path = "C:/denFiles/git/technical-vision/2lab/images/"
 img = cv.imread(img_path + "winter_small.jpg", cv.IMREAD_GRAYSCALE)
 
-x_shift = -50
-y_shift = 40
+# Set the parameters
+x_shift = -100
+y_shift = 60
 
 shifted_img = np.zeros_like(img)
 

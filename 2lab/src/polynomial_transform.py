@@ -54,13 +54,15 @@ for undef_p in undef_inner_arr:
             intensities.append(polyn_img[p[0], p[1]])
     polyn_img[undef_p[0], undef_p[1]] = int(np.mean(intensities))  # Assign the found intensity
 
-cv.imwrite(img_path + "polyn_winter_qqq.jpg", polyn_img)
-cv.imwrite(img_path + "all_undefined.jpg", undef_all)
-cv.imwrite(img_path + "borders.jpg", borders)
-cv.imwrite(img_path + "inner)undefined.jpg", undef_inner)
+# cv.imwrite(img_path + "all_undefined.jpg", undef_all)
+# cv.imwrite(img_path + "borders.jpg", borders)
+# cv.imwrite(img_path + "inner_undefined.jpg", undef_inner)
+
+# cv.imshow("All undefined pixels", undef_all)
+# cv.imshow("Borders", borders)
+# cv.imshow("Inner undefined pixels", undef_inner)
+
+cv.imwrite(img_path + "polyn_winter_manual.jpg", polyn_img)
 cv.imshow("Polynomial transform", polyn_img)
-cv.imshow("All undefined pixels", undef_all)
-cv.imshow("Borders", borders)
-cv.imshow("Inner undefined pixels", undef_inner)
 cv.waitKey(0)
 cv.destroyAllWindows()

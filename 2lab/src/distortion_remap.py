@@ -30,7 +30,16 @@ v = v * y_mid + y_mid
 # Do remapping
 dist_img = cv.remap(img, u.astype(np.float32), v.astype(np.float32), cv.INTER_LINEAR)
 
+# Distortion removal
+dr_r, dr_theta = cv.cartToPolar((u - x_mid) / x_mid, (v - y_mid) / y_mid)
+dr_r_new = dr_r*b_0 + F3*dr_r**3
+dr_u, dr_v = cv.polarToCart(dr_r_new, dr_theta)
+dr_u = dr_u * x_mid + x_mid
+dr_v = dr_v * y_mid + y_mid
+dist_rm_img = cv.remap(img, dr_u.astype(np.float32), dr_v.astype(np.float32), cv.INTER_LINEAR)
+
 cv.imwrite(img_path + "kitchen_distortion_remap.jpg", dist_img)
+cv.imshow("Distortion removal", dist_rm_img)
 cv.imshow("Distortion remap", dist_img)
 cv.waitKey(0)
 cv.destroyAllWindows()

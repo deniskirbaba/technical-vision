@@ -6,8 +6,8 @@ img = cv.imread(img_path + "guitar_left_gray.jpg", cv.IMREAD_GRAYSCALE)
 n_rows, n_cols = img.shape[:2]
 
 # Set points
-pts_src = np.float32([[775, 881], [819, 993], [888, 1152]])
-pts_dst = np.float32([[58, 753], [99, 860], [159, 1000]])
+pts_src = np.float32([[765, 471], [871, 252], [888, 1152]])
+pts_dst = np.float32([[65, 312], [104, 54], [159, 1000]])
 
 # Get the transformation matrix
 T = cv.getAffineTransform(pts_src, pts_dst)

@@ -16,16 +16,16 @@ img_copy = img.astype(np.float32) / 255
 img_copy = cv.copyMakeBorder(img_copy, int((kernel_shape[0] - 1) / 2), int(kernel_shape[0] / 2), int((kernel_shape[1] - 1) / 2), int(kernel_shape[1] / 2), cv.BORDER_REPLICATE)
 
 # Fill arrays for each kernel item
-img_layers = np.zeros(img.shape + (np.prod(kernel_shape), ), dtype=np.float32)
+img_with_areas = np.zeros(img.shape + (np.prod(kernel_shape),), dtype=np.float32)
 for i in range(kernel_shape[0]):
     for j in range(kernel_shape[1]):
-        img_layers[:, :, i * kernel_shape[1] + j] = kernel[i, j] * img_copy[i:i + n_rows, j:j + n_cols]
+        img_with_areas[:, :, i * kernel_shape[1] + j] = kernel[i, j] * img_copy[i:i + n_rows, j:j + n_cols]
 
 # Sort arrays
-img_layers.sort()
+img_with_areas.sort()
 
 # Choose layer with concrete rank
-img_new = img_layers[:, :, rank]
+img_new = img_with_areas[:, :, rank]
 
 # Convert back
 img_new = np.clip(255 * img_new, 0, 255).astype(np.uint8)

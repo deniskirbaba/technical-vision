@@ -2,13 +2,13 @@ import cv2 as cv
 import numpy as np
 
 img_path = "C:/denFiles/git/technical-vision/3lab/images/"
-img_name = "oulanka.jpg"
+img_name = "lake.jpg"
 img = cv.imread(img_path + img_name, cv.IMREAD_GRAYSCALE)
 
 # Noise parameter
 p = 0.05
 # Salt vs pepper ratio
-s_p_ratio = 1
+s_p_ratio = 0.5
 # Generate random numbers
 rng = np.random.default_rng()
 vals = rng.random(img.shape)

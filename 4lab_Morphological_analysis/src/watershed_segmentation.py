@@ -15,65 +15,70 @@ def bwareopen(img, dim, conn=8):
 
 
 # Reading image
-img_path = "C:/denFiles/git/technical-vision/4lab/images/"
+img_path = "C:/denFiles/git/technical-vision/4lab_Morphological_analysis/images/"
 img_name = "oranges.jpg"
 img = cv.imread(img_path + img_name, cv.IMREAD_COLOR)
 n_rows, n_cols = img.shape[:2]
 
 # Convert to grayscale
 img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_grayscale.jpg", img_gray)
 
 # Apply threshold
-ret, working_img = cv.threshold(img_gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-cv.imshow("Threshold", working_img)
+ret_gray, img_threshold = cv.threshold(img_gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_threshold.jpg", img_threshold)
 
-# Remove small components
-working_img = bwareopen(working_img, 5000, 4)
-cv.imshow("Removing small components", working_img)
+# Remove noise
+working_img = bwareopen(img_threshold, 40, 4)
+el = cv.getStructuringElement(cv.MORPH_ELLIPSE, (5, 5))
+working_img = cv.morphologyEx(working_img, cv.MORPH_CLOSE, el, borderType=cv.BORDER_REFLECT)
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_removed_noise.jpg", working_img)
 
-el = cv.getStructuringElement(cv.MORPH_ELLIPSE, (9, 9))
-# Apply closing
-working_img = cv.morphologyEx(working_img, cv.MORPH_CLOSE, el)
-cv.imshow("After closing", working_img)
+# Find sure foreground
+img_fg = cv.distanceTransform(cv.erode(working_img, el, iterations=20), cv.DIST_L2, 5)
+cv.normalize(img_fg, img_fg, 0, 255.0, cv.NORM_MINMAX)
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_fg.jpg", np.clip(img_fg, 0, 255).astype(np.uint8))
 
-# Do distance transformation
-# Find foreground location
-# Define foreground markers
-img_fg = cv.distanceTransform(working_img, cv.DIST_L2, 5)
+ret_fg, img_fg = cv.threshold(img_fg, 0.4 * img_fg.max(), 255, cv.THRESH_BINARY)
+img_fg = np.clip(img_fg, 0, 255).astype(np.uint8)
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_fg_threshold.jpg", img_fg)
 
-# Normalize the distance image for range = {0.0, 1.0}
-# so we can visualize and threshold it
-img_fg_norm = np.zeros_like(img_fg)
-cv.normalize(img_fg, img_fg_norm, 0, 1.0, cv.NORM_MINMAX)
-cv.imshow('Distance Transform Image', img_fg_norm)
+ret, markers = cv.connectedComponents(img_fg)  # Location and markers of sure foreground
 
-ret, img_fg = cv.threshold(img_fg, 0.6 * img_fg.max(), 255, cv.THRESH_BINARY)
-img_fg = np.clip(img_fg, 0, 255).astype(np.uint8)  # Convert to uint8
-cv.imshow("Thresholded foreground", img_fg)
+# Find sure background
+img_bg = cv.dilate(img_threshold, el, iterations=15)
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_bg.jpg", img_bg)
 
-ret, markers = cv.connectedComponents(img_fg)
+# img_bg = np.zeros_like(working_img)
+# markers_bg = markers.copy()
+# markers_bg = cv.watershed(img, markers_bg)
+# img_bg[markers_bg == -1] = 255
+# cv.imwrite(img_path + img_name.rpartition('.')[0] + "_bg.jpg", img_bg)
 
-# Find background location
-img_bg = np.zeros_like(working_img)
-markers_bg = markers.copy()
-markers_bg = cv.watershed(img, markers_bg)
-img_bg[markers_bg == -1] = 255
-cv.imshow("Background", img_bg)
+# Finding unknown region
+img_unknown = cv.subtract(img_bg, img_fg)
 
-# Define undefined area
-img_undef = cv.subtract(~img_bg, img_fg)
-# Define all markers
+# Add one to all labels so that sure background is not 0, but 1
 markers = markers + 1
-markers[img_undef == 255] = 0
+# Now, mark the region of unknown with zero
+markers[img_unknown == 255] = 0
+
+# JET colormap areas before watershed segmentation
+# The dark blue region shows unknown region. Sure coins are colored with different values.
+# Remaining area which are sure background are shown in lighter blue compared to unknown region.
+img_jet_before = cv.applyColorMap((markers.astype(np.float32) * 255 / (ret + 1)).astype(np.uint8), colormap=cv.COLORMAP_JET)
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_jet_before.jpg", img_jet_before)
 
 # Do watershed
 markers = cv.watershed(img, markers)
-img[markers == -1] = (0, 0, 255)
-cv.imshow("Result", img)
 
-# JET
-img_jet = cv.applyColorMap((markers.astype(np.float32) * 255 / (ret + 1)).astype(np.uint8), colormap=cv.COLORMAP_JET)
-cv.imshow("JET", img_jet)
+# Visualization
+res_img = np.copy(img)
+res_img[markers == -1] = 255
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_res.jpg", res_img)
 
-cv.waitKey(0)
-cv.destroyAllWindows()
+# JET colormap areas after watershed segmentation
+img_jet_after = cv.applyColorMap((markers.astype(np.float32) * 255 / (ret + 1)).astype(np.uint8), colormap=cv.COLORMAP_JET)
+cv.imwrite(img_path + img_name.rpartition('.')[0] + "_jet_after.jpg", img_jet_after)
+
+print("Done")

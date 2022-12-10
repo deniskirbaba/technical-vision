@@ -25,7 +25,7 @@ i_max = np.max(img)
 
 new_img = np.zeros_like(img)
 
-while i_max > i_w:
+while i_max > (i_w + i_n):
     new_img[(img > i_n) & (img <= i_n + i_w)] = i_n
     i_n += (i_w + 1)
     n += 1

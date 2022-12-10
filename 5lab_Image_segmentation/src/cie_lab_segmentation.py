@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 # Reading image
-img_path = "C:/Files/git/technical-vision/5lab_Image_segmentation/images/"
+img_path = "C:/Users/R1505-W-2-Stud/Downloads/technical-vision-main/technical-vision-main/5lab_Image_segmentation/images/"
 img_name = "colorful_apples.jpg"
 img = cv.imread(img_path + img_name, cv.IMREAD_COLOR)
 

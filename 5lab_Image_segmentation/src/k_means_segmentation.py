@@ -11,7 +11,7 @@ img_lab = cv.cvtColor(img, cv.COLOR_BGR2Lab)
 img_lab_l, img_lab_a, img_lab_b = cv.split(img_lab)
 
 # Set number of color segments
-col_seg_num = 3
+col_seg_num = 4
 
 # Merge 'a' and 'b' components and then reshape it
 ab = cv.merge([img_lab_a, img_lab_b])
